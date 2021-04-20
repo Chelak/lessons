@@ -23,7 +23,7 @@ public class DataSourcesConfiguration {
                     environment.getProperty("datasource.password")
             );
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return connection;
     }
