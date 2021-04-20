@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 
 public abstract class AbstractDAO<T extends Serializable> implements Operations<T> {
-  private final Connection dataSourcesConnection;
+  private Connection dataSourcesConnection;
 
   public AbstractDAO(Connection dataSourcesConnection) {
     this.dataSourcesConnection = dataSourcesConnection;

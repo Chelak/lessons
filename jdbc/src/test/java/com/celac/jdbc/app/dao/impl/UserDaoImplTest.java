@@ -1,6 +1,7 @@
 package com.celac.jdbc.app.dao.impl;
 
 import com.celac.jdbc.app.config.DataSourcesConfiguration;
+import com.celac.jdbc.app.dao.impl.preparedstatementinterface.UserDaoImpl;
 import com.celac.jdbc.app.entities.User;
 import org.junit.Before;
 import org.junit.Test;
