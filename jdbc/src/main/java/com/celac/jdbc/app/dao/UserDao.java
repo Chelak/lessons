@@ -10,4 +10,8 @@ public interface UserDao extends Operations<User> {
   User findByUsername(String userName);
 
   void deleteByUserName(String username);
+
+  int[] batchInsert(List<User> userList);
+
+  int[] batchUpdate(List<User> userList);
 }

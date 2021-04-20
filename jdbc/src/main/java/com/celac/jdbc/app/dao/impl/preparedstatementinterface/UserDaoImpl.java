@@ -1,11 +1,10 @@
-package com.celac.jdbc.app.dao.impl;
+package com.celac.jdbc.app.dao.impl.preparedstatementinterface;
 
 import com.celac.jdbc.app.dao.UserDao;
+import com.celac.jdbc.app.dao.impl.AbstractDAO;
 import com.celac.jdbc.app.entities.User;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,19 +102,32 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
       e.printStackTrace();
     }
   }
-
+  // JDBC Transaction Management Example
   @Override
   public void create(User entity) {
     String sql = "INSERT INTO users (user_name, first_name, last_name) VALUES (?,?,?)";
+    Connection conn = getDataSourcesConnection();
     try {
-      PreparedStatement statement = getDataSourcesConnection().prepareStatement(sql);
-      statement.setString(1, entity.getUserName());
-      statement.setString(2, entity.getFirstName());
-      statement.setString(3, entity.getLastName());
-
-      int rowsInserted = statement.executeUpdate();
-      if (rowsInserted > 0) {
-        System.out.println("A new user was inserted successfully!");
+      // STEP 1 - Disable auto commit mode
+      conn.setAutoCommit(false);
+      // Create insert statement
+      try (PreparedStatement statement = conn.prepareStatement(sql)) {
+        statement.setString(1, entity.getUserName());
+        statement.setString(2, entity.getFirstName());
+        statement.setString(3, entity.getLastName());
+        statement.executeUpdate();
+        // STEP 2 - Commit insert and update statement
+        conn.commit();
+      } catch (SQLException e) {
+        if (conn != null) {
+          try {
+            // STEP 3 - Roll back transaction
+            System.out.println("Transaction is being rolled back.");
+            conn.rollback();
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          }
+        }
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -152,4 +164,66 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
 
   @Override
   public void deleteById(long entityId) {}
+
+
+  @Override
+  public int[] batchInsert(List<User> userList) {
+    int[] updateCounts = null;
+    String sql = "INSERT INTO users (user_name, first_name, last_name) VALUES (?,?,?)";
+    try (
+    Connection connection  = getDataSourcesConnection();
+    PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+      connection.setAutoCommit(false);
+      for (User u : userList){
+        preparedStatement.setString(1, u.getUserName());
+        preparedStatement.setString(2, u.getFirstName());
+        preparedStatement.setString(3, u.getLastName());
+        preparedStatement.addBatch();
+      }
+       updateCounts = preparedStatement.executeBatch();
+      connection.commit();
+      connection.setAutoCommit(true);
+    } catch (BatchUpdateException batchUpdateException) {
+      printBatchUpdateException(batchUpdateException);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return updateCounts;
+  }
+
+  @Override
+  public int[] batchUpdate(List<User> userList) {
+    int[] updateCounts = null;
+    String sql = "UPDATE users SET user_name = ? where id = ?";
+    try (
+      Connection connection  = getDataSourcesConnection();
+      PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+      connection.setAutoCommit(false);
+      for (User u : userList){
+        preparedStatement.setString(1, u.getUserName());
+        preparedStatement.setLong(2, u.getId());
+        preparedStatement.addBatch();
+      }
+      updateCounts = preparedStatement.executeBatch();
+      connection.commit();
+      connection.setAutoCommit(true);
+    } catch (BatchUpdateException batchUpdateException) {
+      printBatchUpdateException(batchUpdateException);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return updateCounts;
+  }
+  private void printBatchUpdateException(BatchUpdateException b) {
+    System.err.println("----BatchUpdateException----");
+    System.err.println("SQLState:  " + b.getSQLState());
+    System.err.println("Message:  " + b.getMessage());
+    System.err.println("Vendor:  " + b.getErrorCode());
+    System.err.print("Update counts:  ");
+    int[] updateCounts = b.getUpdateCounts();
+    for (int i = 0; i < updateCounts.length; i++) {
+      System.err.print(updateCounts[i] + "   ");
+    }
+  }
+
 }
