@@ -1,69 +1,61 @@
 package com.celac.jdbc.app.entities;
 
-public class User {
-    private Long id;
-    private String userName;
-    private String password;
-    private Boolean accountLocked;
-    private UserRole role;
-    private UserProfile userProfile;
+import java.io.Serializable;
+import java.util.List;
 
-    public User() {
-    }
+public class User implements Serializable {
+  private Long id;
+  private String userName;
+  private String firstName;
+  private String lastName;
+  private List<Task> taskList;
 
-    public User(long id, boolean account_locked, String password, String user_name) {
-        this.id = id;
-        this.accountLocked = account_locked;
-        this.password = password;
-        this.userName = user_name;
-    }
+  public User() {}
 
+  public User(Long id, String userName, String firstName, String lastName) {
+    this.id = id;
+    this.userName = userName;
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getUserName() {
-        return userName;
-    }
+  public String getUserName() {
+    return userName;
+  }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
 
-    public String getPassword() {
-        return password;
-    }
+  public String getFirstName() {
+    return firstName;
+  }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
-    public Boolean getAccountLocked() {
-        return accountLocked;
-    }
+  public String getLastName() {
+    return lastName;
+  }
 
-    public void setAccountLocked(Boolean accountLocked) {
-        this.accountLocked = accountLocked;
-    }
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
 
-    public UserRole getRole() {
-        return role;
-    }
+  public List<Task> getTaskList() {
+    return taskList;
+  }
 
-    public void setRole(UserRole role) {
-        this.role = role;
-    }
-
-    public UserProfile getUserProfile() {
-        return userProfile;
-    }
-
-    public void setUserProfile(UserProfile userProfile) {
-        this.userProfile = userProfile;
-    }
+  public void setTaskList(List<Task> taskList) {
+    this.taskList = taskList;
+  }
 }

@@ -2,7 +2,6 @@ package com.celac.jdbc.app.dao.impl;
 
 import com.celac.jdbc.app.config.DataSourcesConfiguration;
 import com.celac.jdbc.app.entities.User;
-import com.celac.jdbc.app.entities.UserRole;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,8 +40,6 @@ public class UserDaoImplTest {
     @Test
     public void create() {
         User user = new User();
-        user.setRole( new UserRole(3l));
-        user.setPassword("adasdasdasdsasd");
         user.setUserName("ion.cudoi@gmail.com");
         userDao.create(user);
         User userCreated = userDao.findByUsername("ion.cudoi@gmail.com");
