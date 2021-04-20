@@ -1,6 +1,8 @@
 package com.celac.jdbc.app.config;
 
 import com.celac.jdbc.app.util.LocalConfigurationPropertiesLoader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,11 +10,11 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class DataSourcesConfiguration {
-
+    private final static Logger logger = LogManager.getLogger(DataSourcesConfiguration.class);
     private static final Properties environment = LocalConfigurationPropertiesLoader.getInstance();
 
     public Connection getConnection() {
-        System.out.println("Init data base connection");
+        logger.info("Init data base connection");
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(
