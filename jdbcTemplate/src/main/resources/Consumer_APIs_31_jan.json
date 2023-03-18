@@ -1,0 +1,575 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "https://r7qlrytnt6.execute-api.eu-north-1.amazonaws.com/nbp/",
+      "description": "Generated server url"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Customer Order Service",
+      "description": "Customer Order APIs"
+    },
+    {
+      "name": "Customer Service",
+      "description": "Customer APIs"
+    }
+  ],
+  "paths": {
+    "/api/v1/customers/{storeId}/{customerId}/order": {
+      "get": {
+        "tags": [
+          "Customer Order Service"
+        ],
+        "summary": "Fetch Customer Order",
+        "description": "Fetch Customer Order",
+        "operationId": "getCustomerOrder",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCustomerOrderResponseWrapper"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: Invalid Credentials"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Customer Order Service"
+        ],
+        "summary": "Add a Customer Order",
+        "description": "Add Customer Order",
+        "operationId": "addCustomers",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Customer Order Not created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerOrderResponseWrapper"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: Invalid Credentials"
+          },
+          "201": {
+            "description": "Customer Order created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerOrderResponseWrapper"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/v1/customers/order/{orderId}/markasexported": {
+      "patch": {
+        "tags": [
+          "Customer Order Service"
+        ],
+        "summary": "Mark Customer Order as exported.",
+        "description": "Mark Customer Order as exported",
+        "operationId": "markOrderAsExported",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatchCustomerOrderResponseWrapper"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatchCustomerOrderResponseWrapper"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: Invalid Credentials"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/v1/customers/{storeId}": {
+      "get": {
+        "tags": [
+          "Customer Service"
+        ],
+        "summary": "Fetch all customers for a store",
+        "description": "Fetch all customers for a store",
+        "operationId": "getAllCustomers",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customers List",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllCustomersResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: Invalid Credentials"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/v1/customers/{storeId}/{customerId}": {
+      "get": {
+        "tags": [
+          "Customer Service"
+        ],
+        "summary": "Fetch Customer details",
+        "description": "Fetch Customer details",
+        "operationId": "getCustomer",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCustomerResponseWrapper"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: Invalid Credentials"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "OrderRequestDto": {
+        "required": [
+          "orderrows"
+        ],
+        "type": "object",
+        "properties": {
+          "orderrows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderRowDto"
+            }
+          }
+        }
+      },
+      "OrderRowDto": {
+        "required": [
+          "itemId",
+          "quantity"
+        ],
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "CustomerOrderResponseWrapper": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "enum": [
+              "S",
+              "W",
+              "E"
+            ]
+          },
+          "resultMessage": {
+            "type": "string"
+          },
+          "orderId": {
+            "type": "string"
+          }
+        }
+      },
+      "PatchCustomerOrderResponseWrapper": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "enum": [
+              "S",
+              "W",
+              "E"
+            ]
+          },
+          "resultMessage": {
+            "type": "string"
+          }
+        }
+      },
+      "AllCustomersResponse": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "enum": [
+              "S",
+              "W",
+              "E"
+            ]
+          },
+          "resultMessage": {
+            "type": "string"
+          },
+          "customers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomerResponseDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMetaInfo"
+          }
+        }
+      },
+      "CustomerResponseDto": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "organizationNumber": {
+            "type": "string"
+          }
+        }
+      },
+      "PaginationInfo": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "PaginationMetaInfo": {
+        "type": "object",
+        "properties": {
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationInfo"
+          }
+        }
+      },
+      "AccountCardDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "AccountDto": {
+        "type": "object",
+        "properties": {
+          "orderLimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "blockedFlag": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AgreementDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "GetCustomerResponse": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "local": {
+            "type": "boolean"
+          },
+          "accountCards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccountCardDto"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "organizationNumber": {
+            "type": "string"
+          },
+          "customerStatus": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "blocked": {
+            "type": "boolean"
+          },
+          "alcoholLicenseLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "vatExempted": {
+            "type": "string"
+          },
+          "tobaccoLicenceLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customerAccount": {
+            "$ref": "#/components/schemas/AccountDto"
+          },
+          "agreements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgreementDto"
+            }
+          },
+          "customerOrderExist": {
+            "type": "boolean"
+          },
+          "b2cClubCustomer": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GetCustomerResponseWrapper": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "enum": [
+              "S",
+              "W",
+              "E"
+            ]
+          },
+          "resultMessage": {
+            "type": "string"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/GetCustomerResponse"
+          }
+        }
+      },
+      "GetCustomerOrderResponseWrapper": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "enum": [
+              "S",
+              "W",
+              "E"
+            ]
+          },
+          "resultMessage": {
+            "type": "string"
+          },
+          "orderId": {
+            "type": "string"
+          },
+          "orderRows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderRow"
+            }
+          }
+        }
+      },
+      "OrderRow": {
+        "required": [
+          "itemId",
+          "quantity"
+        ],
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    }
+  }
+}

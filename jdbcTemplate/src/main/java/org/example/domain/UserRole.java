@@ -1,15 +1,10 @@
-package com.celac.jdbc.app.entities;
+package org.example.domain;
 
-public class UserRole {
-    private Long id;
+import java.io.Serializable;
+
+public class UserRole implements Serializable {
+    private Long  id;
     private String roleName;
-
-    public UserRole(Long id) {
-        this.id = id;
-    }
-
-    public UserRole() {
-    }
 
     public Long getId() {
         return id;
