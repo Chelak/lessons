@@ -8,16 +8,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import org.lessons.scelac.config.security.CustomUserDetails;
-import org.lessons.scelac.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -36,11 +33,6 @@ public class JwtTokenProvider {
     private final String jwtSecret = "myVeryVerySecretPrivateYyJpZCI6MSwiZmlyc3ROYW1lIjoiSm9uIiwibGFzdE5hbWUiOiJqb24uZGF2aXNAZ21";
     private static final Duration JWT_TOKEN_VALIDITY = Duration.ofDays(365);
     //in case if principal are not cast correct fetch  from  db user by  email
-    private final UserService userService;
-
-    public JwtTokenProvider(UserService userService) {
-        this.userService = userService;
-    }
 
     public String generateToken(Authentication authentication){
             final CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -79,7 +71,7 @@ public class JwtTokenProvider {
         }
     boolean validateToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(jwtSecret.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException ex) {
             logger.error("Invalid JWT signature");

@@ -8,7 +8,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,13 +21,13 @@ import java.util.Collection;
 /**
  * @author scelac
  */
-@Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
-  private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
+public class JwtAuthenticationOncePerRequestFilter extends OncePerRequestFilter {
+  private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationOncePerRequestFilter.class);
   private final JwtTokenProvider tokenProvider;
   private final CustomUserDetailsService userDetailsService;
 
-  public JwtAuthenticationFilter(
+  public JwtAuthenticationOncePerRequestFilter(
       JwtTokenProvider tokenProvider, CustomUserDetailsService userDetailsService) {
     this.tokenProvider = tokenProvider;
     this.userDetailsService = userDetailsService;
@@ -68,7 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private String getJwtFromRequest(HttpServletRequest request) {
     String bearerToken = request.getHeader("Authorization");
-    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("bearer ")) {
+    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
       return bearerToken.substring(7, bearerToken.length());
     }
     return null;
