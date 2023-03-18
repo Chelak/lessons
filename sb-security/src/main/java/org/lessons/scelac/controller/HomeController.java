@@ -14,26 +14,31 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
 
     @GetMapping("/hello-admin")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<String> getAdminGreeting(){
         return ResponseEntity.ok("Hello Mr. Admin!");
     }
 
     @GetMapping("/hello-manager")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PRODUCT_MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','PRODUCT_MANAGER')")
     public ResponseEntity<String> getManagerGreeting(){
         return ResponseEntity.ok("Hello Mr. Manager!");
     }
 
     @GetMapping("/hello-tester")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TESTER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','TESTER')")
     public ResponseEntity<String> getUserGreeting(){
         return ResponseEntity.ok("Hello Mr. Tester!");
     }
 
     @GetMapping("/hello-guest")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PRODUCT_GUEST')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','GUEST')")
     public ResponseEntity<String> getGuestGreeting(){
         return ResponseEntity.ok("Hello Mr. Guest!");
+    }
+    @GetMapping("/hello-developer")
+    @PreAuthorize("hasAnyAuthority('ADMIN','DEVELOPER')")
+    public ResponseEntity<String> getDeveloperGreeting(){
+        return ResponseEntity.ok("Hello Mr. DEVELOPER!");
     }
 }
