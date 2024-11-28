@@ -15,16 +15,17 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class CustomHttpClient {
-   private static final HttpClient client = HttpClient.newHttpClient();
+  private static final HttpClient client = HttpClient.newHttpClient();
 
-    public static CompletableFuture<Void> fetchPage (URI uri,
-                                                      Function<HttpResponse,Optional<List<Item>>> bodyConverter,
-                                                      Consumer<Optional<List<Item>>> respConsumer) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(uri)
-                .header("Accept", "application/json")
-                .GET()
-                .build();
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(bodyConverter).thenAccept(respConsumer);
-    }
+  public static CompletableFuture<Void> fetchPage(
+      URI uri,
+      Function<HttpResponse, Optional<List<Item>>> bodyConverter,
+      Consumer<Optional<List<Item>>> respConsumer) {
+    HttpRequest request =
+        HttpRequest.newBuilder().uri(uri).header("Accept", "application/json").GET().build();
+    return client
+        .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+        .thenApply(bodyConverter)
+        .thenAccept(respConsumer);
+  }
 }

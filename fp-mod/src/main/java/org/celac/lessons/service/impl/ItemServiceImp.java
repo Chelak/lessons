@@ -17,28 +17,29 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 
 public class ItemServiceImp implements ItemService {
-    Logger logger = Logger.getLogger(ItemServiceImp.class.getName());
-    private final URI uri = URI.create("https://api.restful-api.dev/objects");
-    private static final ObjectMapper objectMapper = new ObjectMapper()
-            .enable(SerializationFeature.INDENT_OUTPUT);
-    private final Function<HttpResponse,Optional<List<Item>>> bodyConverter = httpResponse -> {
+  Logger logger = Logger.getLogger(ItemServiceImp.class.getName());
+  private final URI uri = URI.create("https://api.restful-api.dev/objects");
+  private static final ObjectMapper objectMapper =
+      new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+  private final Function<HttpResponse, Optional<List<Item>>> bodyConverter =
+      httpResponse -> {
         if (httpResponse.statusCode() == 200) {
-            try {
-                List<Item> items = objectMapper.readValue(httpResponse.body().toString(), new TypeReference<List<Item>>() {});
-                return Optional.of(items);
-            } catch (JsonProcessingException e) {
-                logger.info(e.getMessage());
-                return Optional.empty();
-            }
-        } else {
+          try {
+            List<Item> items =
+                objectMapper.readValue(
+                    httpResponse.body().toString(), new TypeReference<List<Item>>() {});
+            return Optional.of(items);
+          } catch (JsonProcessingException e) {
+            logger.info(e.getMessage());
             return Optional.empty();
+          }
+        } else {
+          return Optional.empty();
         }
-    };
+      };
 
-
-
-    @Override
-    public void loadAndConsumeItems(Consumer<Optional<List<Item>>> respConsumer) {
-        CustomHttpClient.fetchPage(uri,bodyConverter,respConsumer).join();
-    }
+  @Override
+  public void loadAndConsumeItems(Consumer<Optional<List<Item>>> respConsumer) {
+    CustomHttpClient.fetchPage(uri, bodyConverter, respConsumer).join();
+  }
 }

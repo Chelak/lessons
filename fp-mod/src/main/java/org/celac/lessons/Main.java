@@ -8,6 +8,7 @@ public class Main {
 
     new ItemServiceImp()
         .loadAndConsumeItems(
+            // on this step via lambda is described how to consume result
             response -> {
               response.ifPresent(System.out::println);
             });
