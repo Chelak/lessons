@@ -63,5 +63,4 @@ public class UserDaoImplTest {
         assertNull(userDao.findByUsername("ion.cutrei@gmail.com"));
     }
 
-
 }
