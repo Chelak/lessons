@@ -155,18 +155,6 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   }
 
   @Override
-  public List<User> findAll() {
-    return null;
-  }
-
-  @Override
-  public void delete(User entity) {}
-
-  @Override
-  public void deleteById(long entityId) {}
-
-
-  @Override
   public int[] batchInsert(List<User> userList) {
     int[] updateCounts = null;
     String sql = "INSERT INTO users (user_name, first_name, last_name) VALUES (?,?,?)";
