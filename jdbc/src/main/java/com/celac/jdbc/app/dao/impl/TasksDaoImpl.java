@@ -1,42 +1,38 @@
 package com.celac.jdbc.app.dao.impl;
 
 import com.celac.jdbc.app.dao.TasksDao;
+import com.celac.jdbc.app.dao.mappers.TaskMapper;
 import com.celac.jdbc.app.entities.Task;
 import com.celac.jdbc.app.entities.enums.TaskStatus;
 
+import com.celac.jdbc.app.sql.impl.ResultSetProcessorImpl;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+/**
+ * @author scelac
+ */
 public class TasksDaoImpl extends AbstractDAO<Task> implements TasksDao {
-
+  private final static Logger logger = LogManager.getLogger(TasksDaoImpl.class);
   public TasksDaoImpl(Connection dataSourcesConnection) {
     super(dataSourcesConnection);
   }
-
   @Override
   public Task findOne(Long id) {
-    return null;
+    String sql = "select t.* from tasks t where u.id = ?";
+     try (Statement statement = getDataSourcesConnection().createStatement();
+          ResultSet result = statement.executeQuery(sql)){
+       return new ResultSetProcessorImpl<>(result, new TaskMapper()).process();
+     }  catch (SQLException e) {
+       logger.error(e.getMessage(), e);
+       return null;
+     }
   }
-
-  @Override
-  public List<Task> findAll() {
-    return null;
-  }
-
-  @Override
-  public void create(Task entity) {}
-
-  @Override
-  public Task update(Task entity) {
-    return null;
-  }
-
-  @Override
-  public void delete(Task entity) {}
-
-  @Override
-  public void deleteById(long entityId) {}
-
   @Override
   public List<Task> getUsersTask(Long userId) {
     return null;
