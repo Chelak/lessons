@@ -7,8 +7,11 @@ import com.celac.jdbc.app.entities.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
+  private static final Logger logger = LogManager.getLogger(UserDaoImpl.class);
 
   public UserDaoImpl(Connection dataSourcesConnection) {
     super(dataSourcesConnection);
@@ -19,9 +22,8 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
     String sql = "select u.* from users u where u.id = " + id;
     User user = null;
 
-    try {
-      Statement statement = getDataSourcesConnection().createStatement();
-      ResultSet result = statement.executeQuery(sql);
+    try (Statement statement = getDataSourcesConnection().createStatement();
+        ResultSet result = statement.executeQuery(sql)) {
       while (result.next()) {
         user =
             new User(
@@ -32,7 +34,7 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
       }
 
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.error(e);
     }
 
     return user;
@@ -42,9 +44,8 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   public List<User> selectAllPageable(int fromRow, int rows) {
     List<User> users = new ArrayList<>(rows);
     String sql = "SELECT * FROM users u  LIMIT" + fromRow + "," + rows;
-    try {
-      Statement statement = getDataSourcesConnection().createStatement();
-      ResultSet result = statement.executeQuery(sql);
+    try (Statement statement = getDataSourcesConnection().createStatement();
+        ResultSet result = statement.executeQuery(sql)) {
       while (result.next()) {
         users.add(
             new User(
@@ -55,7 +56,7 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
       }
 
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.error(e);
     }
     return users;
   }
