@@ -4,6 +4,8 @@ import com.celac.jdbc.app.dao.UserDao;
 import com.celac.jdbc.app.dao.impl.AbstractDAO;
 import com.celac.jdbc.app.entities.User;
 
+import com.celac.jdbc.app.sql.PageRequest;
+import com.celac.jdbc.app.sql.PageResponse;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,11 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   }
 
   @Override
+  public User findByUsername(String userName) {
+    return null;
+  }
+
+  @Override
   public List<User> selectAllPageable(int fromRow, int rows) {
     List<User> users = new ArrayList<>(rows);
     String sql = "SELECT * FROM users u  LIMIT" + fromRow + "," + rows;
@@ -59,6 +66,11 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
       logger.error(e);
     }
     return users;
+  }
+
+  @Override
+  public PageResponse<User> selectAllPaginated(PageRequest pageRequest) {
+    return null;
   }
 
   @Override
