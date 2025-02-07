@@ -2,10 +2,16 @@ package com.celac.jdbc.app.dao.impl.preparedstatementinterface;
 
 import com.celac.jdbc.app.dao.UserDao;
 import com.celac.jdbc.app.dao.impl.AbstractDAO;
+import com.celac.jdbc.app.dao.mappers.UserListRowMapper;
 import com.celac.jdbc.app.entities.User;
 
+import com.celac.jdbc.app.sql.PageRequest;
+import com.celac.jdbc.app.sql.PageResponse;
+import com.celac.jdbc.app.sql.impl.PageResponseImpl;
+import com.celac.jdbc.app.sql.impl.ResultSetProcessorImpl;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,13 +48,13 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   }
 
   @Override
-  public List<User> selectAllPageable(int fromRow, int rows) {
-    List<User> users = new ArrayList<>(rows);
+  public List<User> selectAllPageable(int pageNumber, int pageSize) {
+    List<User> users = new ArrayList<>();
     String sql = "SELECT u.id, u.user_name, u.first_name, u.last_name FROM users u  LIMIT ?, ?";
     try (PreparedStatement statement = getDataSourcesConnection().prepareStatement(sql)) {
-      statement.setInt(1, fromRow);
-      statement.setInt(2, rows);
-
+      int offset = (pageNumber - 1) * pageSize;
+      statement.setInt(1, pageSize);
+      statement.setInt(2, offset);
       try (ResultSet result = statement.executeQuery()) {
         while (result.next()) {
           users.add(
@@ -64,6 +70,40 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
       logger.error(e);
     }
     return users;
+  }
+
+  @Override
+  public PageResponse<User> selectAllPaginated(PageRequest pageRequest) {
+    PageResponse pageResponse = null;
+    long totalElements = 0 ;
+    String sql = "SELECT u.id, u.user_name, u.first_name, u.last_name FROM users u  LIMIT ?, ?";
+    try (PreparedStatement statement = getDataSourcesConnection().prepareStatement(sql)) {
+      statement.setInt(1, pageRequest.getOffset());
+      statement.setInt(2, pageRequest.getPageSize());
+      try (ResultSet result = statement.executeQuery()) {
+        List<User> users  = new ResultSetProcessorImpl<>(result, new UserListRowMapper()).process();
+        totalElements =  getTotalElementsFromTableUsers();
+        pageResponse = new PageResponseImpl(users,totalElements);
+      }
+
+    } catch (SQLException e) {
+      logger.error(e);
+      pageResponse = new PageResponseImpl(Collections.emptyList(),totalElements);
+    }
+    return pageResponse;
+  }
+
+  private long getTotalElementsFromTableUsers() {
+    long totalElements = 0;
+    String sql = "SELECT count(u.id)  FROM users as U";
+    try (PreparedStatement statement = getDataSourcesConnection().prepareStatement(sql) ;
+        ResultSet result = statement.executeQuery()) {
+        totalElements = result.getLong(1);
+    } catch (SQLException e) {
+      logger.error(e);
+       return totalElements;
+    }
+    return totalElements;
   }
 
   @Override
