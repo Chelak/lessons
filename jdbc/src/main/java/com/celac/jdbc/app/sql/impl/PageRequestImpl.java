@@ -26,6 +26,6 @@ public class PageRequestImpl implements PageRequest {
 
   @Override
   public int getOffset() {
-    return pageNumber * pageSize;
+    return (pageNumber - 1) * pageSize;
   }
 }

@@ -13,14 +13,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.sql.DataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   private static final Logger logger = LogManager.getLogger(UserDaoImpl.class);
 
-  public UserDaoImpl(Connection dataSourcesConnection) {
-    super(dataSourcesConnection);
+  public UserDaoImpl(DataSource dataSource) {
+    super(dataSource);
   }
 
   @Override
@@ -28,7 +29,7 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
     String sql = "select u.* from users u where u.id = ?";
     User user = null;
 
-    try (PreparedStatement statement = getDataSourcesConnection().prepareStatement(sql)) {
+    try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
       statement.setLong(1, id);
       try (ResultSet result = statement.executeQuery()) {
         while (result.next()) {
@@ -50,8 +51,10 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   @Override
   public List<User> selectAllPageable(int pageNumber, int pageSize) {
     List<User> users = new ArrayList<>();
-    String sql = "SELECT u.id, u.user_name, u.first_name, u.last_name FROM users u  LIMIT ?, ?";
-    try (PreparedStatement statement = getDataSourcesConnection().prepareStatement(sql)) {
+    String sql = "SELECT u.id, u.user_name, u.first_name, u.last_name " +
+                 "FROM users u  LIMIT ? OFFSET ?";
+    try (PreparedStatement statement = getConnection()
+                                          .prepareStatement(sql)) {
       int offset = (pageNumber - 1) * pageSize;
       statement.setInt(1, pageSize);
       statement.setInt(2, offset);
@@ -65,7 +68,6 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
                   result.getString("last_name")));
         }
       }
-
     } catch (SQLException e) {
       logger.error(e);
     }
@@ -76,10 +78,11 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   public PageResponse<User> selectAllPaginated(PageRequest pageRequest) {
     PageResponse pageResponse = null;
     long totalElements = 0 ;
-    String sql = "SELECT u.id, u.user_name, u.first_name, u.last_name FROM users u  LIMIT ?, ?";
-    try (PreparedStatement statement = getDataSourcesConnection().prepareStatement(sql)) {
-      statement.setInt(1, pageRequest.getOffset());
-      statement.setInt(2, pageRequest.getPageSize());
+    String sql = "SELECT u.id, u.user_name, u.first_name, u.last_name " +
+                 " FROM users u  LIMIT ? OFFSET ?";
+    try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
+      statement.setInt(1, pageRequest.getPageSize() );
+      statement.setInt(2, pageRequest.getOffset());
       try (ResultSet result = statement.executeQuery()) {
         List<User> users  = new ResultSetProcessorImpl<>(result, new UserListRowMapper()).process();
         totalElements =  getTotalElementsFromTableUsers();
@@ -95,10 +98,12 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
 
   private long getTotalElementsFromTableUsers() {
     long totalElements = 0;
-    String sql = "SELECT count(u.id)  FROM users as U";
-    try (PreparedStatement statement = getDataSourcesConnection().prepareStatement(sql) ;
-        ResultSet result = statement.executeQuery()) {
-        totalElements = result.getLong(1);
+    String sql = "SELECT count(u.id)  FROM users as u";
+    try (PreparedStatement statement = getConnection().prepareStatement(sql);
+         ResultSet result = statement.executeQuery()) {
+      if(result.next()){
+        totalElements =  result.getInt(1);
+      }
     } catch (SQLException e) {
       logger.error(e);
        return totalElements;
@@ -110,7 +115,7 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   public User findByUsername(String userName) {
     String sql = "select u.* from users u where u.user_name = ?";
     User user = null;
-    try (PreparedStatement statement = getDataSourcesConnection().prepareStatement(sql)) {
+    try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
 
       statement.setString(1, userName);
       ResultSet result = statement.executeQuery();
@@ -132,7 +137,7 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   @Override
   public void deleteByUserName(String username) {
     String sql = "DELETE FROM users WHERE user_name= ?";
-    try (PreparedStatement statement = getDataSourcesConnection().prepareStatement(sql)) {
+    try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
       statement.setString(1, username);
       int rowsDeleted = statement.executeUpdate();
       if (rowsDeleted > 0) {
@@ -146,24 +151,26 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   // JDBC Transaction Management Example
   @Override
   public void create(User entity) {
-    String sql = "INSERT INTO users (user_name, first_name, last_name) VALUES (?,?,?)";
-    try (Connection conn = getDataSourcesConnection(); ) {
+    String sql = "INSERT INTO users (id, user_name, first_name, last_name, role) VALUES (?,?,?,?,?)";
+    try (Connection conn = getConnection()) {
       // STEP 1 - Disable auto commit mode
       conn.setAutoCommit(false);
       // Create insert statement
       try (PreparedStatement statement = conn.prepareStatement(sql)) {
-        statement.setString(1, entity.getUserName());
-        statement.setString(2, entity.getFirstName());
-        statement.setString(3, entity.getLastName());
+        statement.setLong(1, entity.getId());
+        statement.setString(2, entity.getUserName());
+        statement.setString(3, entity.getFirstName());
+        statement.setString(4, entity.getLastName());
+        statement.setLong(5, entity.getUserRole().getId());
         // STEP 2 - Execute SQL statements within a transaction block.
         statement.executeUpdate();
         // STEP 3 - Commit insert and update statement
         conn.commit();
       } catch (SQLException e) {
+        logger.error("Transaction is being rolled back.",e);
         if (conn != null) {
           try {
             // STEP 4 - Roll back transaction
-            logger.error("Transaction is being rolled back.");
             conn.rollback();
           } catch (Exception ex) {
             logger.error(ex);
@@ -179,7 +186,7 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   public User update(User user) {
     User updatedUser = null;
     String sql = "UPDATE users SET user_name = ? where id = ?";
-    try (PreparedStatement statement = getDataSourcesConnection().prepareStatement(sql)) {
+    try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
       statement.setString(1, user.getUserName());
       statement.setLong(2, user.getId());
       int rowsInserted = statement.executeUpdate();
@@ -198,8 +205,8 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   public int[] batchInsert(List<User> userList) {
     int[] updateCounts = null;
     String sql = "INSERT INTO users (user_name, first_name, last_name) VALUES (?,?,?)";
-    try (Connection connection = getDataSourcesConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+    try (Connection connection = getConnection();
+         PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
       connection.setAutoCommit(false);
 
       for (User u : userList) {
@@ -223,8 +230,8 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   public int[] batchUpdate(List<User> userList) {
     int[] updateCounts = null;
     String sql = "UPDATE users SET user_name = ? where id = ?";
-    try (Connection connection = getDataSourcesConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+    try (Connection connection = getConnection();
+         PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
       connection.setAutoCommit(false);
       for (User u : userList) {
         preparedStatement.setString(1, u.getUserName());

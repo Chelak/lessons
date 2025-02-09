@@ -4,17 +4,19 @@ import com.celac.jdbc.app.dao.Operations;
 
 import java.io.Serializable;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
+import javax.sql.DataSource;
 
 public abstract class AbstractDAO<T extends Serializable> implements Operations<T> {
-  private final Connection dataSourcesConnection;
+  private final DataSource dataSource;
 
-  public AbstractDAO(Connection dataSourcesConnection) {
-    this.dataSourcesConnection = dataSourcesConnection;
+  public AbstractDAO(DataSource dataSource) {
+    this.dataSource = dataSource;
   }
 
-  protected Connection getDataSourcesConnection() {
-    return dataSourcesConnection;
+  protected Connection getConnection() throws SQLException {
+    return dataSource.getConnection();
   }
 
   @Override

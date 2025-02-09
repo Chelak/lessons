@@ -9,14 +9,14 @@ import com.celac.jdbc.app.sql.PageResponse;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sql.DataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   private static final Logger logger = LogManager.getLogger(UserDaoImpl.class);
-
-  public UserDaoImpl(Connection dataSourcesConnection) {
-    super(dataSourcesConnection);
+  public UserDaoImpl(DataSource dataSource) {
+    super(dataSource);
   }
 
   @Override
@@ -24,8 +24,8 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
     String sql = "select u.* from users u where u.id = " + id;
     User user = null;
 
-    try (Statement statement = getDataSourcesConnection().createStatement();
-        ResultSet result = statement.executeQuery(sql)) {
+    try (Statement statement = getConnection().createStatement();
+         ResultSet result = statement.executeQuery(sql)) {
       while (result.next()) {
         user =
             new User(
@@ -51,8 +51,8 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
   public List<User> selectAllPageable(int fromRow, int rows) {
     List<User> users = new ArrayList<>(rows);
     String sql = "SELECT * FROM users u  LIMIT" + fromRow + "," + rows;
-    try (Statement statement = getDataSourcesConnection().createStatement();
-        ResultSet result = statement.executeQuery(sql)) {
+    try (Statement statement = getConnection().createStatement();
+         ResultSet result = statement.executeQuery(sql)) {
       while (result.next()) {
         users.add(
             new User(
@@ -67,6 +67,9 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
     }
     return users;
   }
+
+  @Override
+  public void deleteByUserName(String username) {}
 
   @Override
   public PageResponse<User> selectAllPaginated(PageRequest pageRequest) {
