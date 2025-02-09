@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet id="add_new_user_Roles" author="scelac" >
+        <insert tableName="user_role">
+            <column name="id" valueNumeric="5"/>
+            <column name="role_name" value="GUEST"/>
+        </insert>
+        <insert tableName="user_role">
+            <column name="id" valueNumeric="6"/>
+            <column name="role_name" value="ADMIN"/>
+        </insert>
+        <update tableName="user_role">
+            <column name="role_name" value="PRODUCT_MANAGER" />
+            <where>role_name = 'PM'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="add_password_column" author="scelac" >
+        <addColumn tableName="users">
+            <column name="password" type="LONGTEXT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add_password_value" author="scelac" >
+        <update tableName="users">
+            <column name="password" value="$2a$05$8LsQH2cDqWdw5qVrJQniueaUvtuRRywk58jp3j7h53ioavFPellzi" />
+            <where>id is not null</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

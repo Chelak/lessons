@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import javax.sql.DataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,13 +20,13 @@ import org.apache.logging.log4j.Logger;
  */
 public class TasksDaoImpl extends AbstractDAO<Task> implements TasksDao {
   private final static Logger logger = LogManager.getLogger(TasksDaoImpl.class);
-  public TasksDaoImpl(Connection dataSourcesConnection) {
-    super(dataSourcesConnection);
+  public TasksDaoImpl(DataSource dataSource) {
+    super(dataSource);
   }
   @Override
   public Task findOne(Long id) {
     String sql = "select t.* from tasks t where u.id = ?";
-     try (Statement statement = getDataSourcesConnection().createStatement();
+     try (Statement statement = getConnection().createStatement();
           ResultSet result = statement.executeQuery(sql)){
        return new ResultSetProcessorImpl<>(result, new TaskMapper()).process();
      }  catch (SQLException e) {

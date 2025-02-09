@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet id="create_User_Role_Table" author="scelac" runAlways="true">
+        <preConditions onFail="WARN">
+            <not>
+                <tableExists tableName="user_role"/>
+            </not>
+        </preConditions>
+        <comment>Create User Role Table </comment>
+        <createTable tableName="user_role">
+            <column  name="id"  type="int"  autoIncrement="true">
+                <constraints  primaryKey="true"  nullable="false"/>
+            </column>
+            <column name="role_name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+    <changeSet id="create_User_Table" author="scelac"  runAlways="true">
+        <preConditions onFail="WARN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+        <comment>Create User Role Table </comment>
+        <createTable tableName="users" >
+            <column  name="id"  type="int"  autoIncrement="true">
+                <constraints  primaryKey="true"  nullable="false"/>
+            </column>
+            <column  name="first_name"  type="varchar(50)"/>
+            <column  name="last_name"  type="varchar(50)"/>
+            <column  name="user_name"  type="varchar(50)">
+                <constraints  nullable="false"  unique="true"/>
+            </column>
+            <column name="role" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column  name="enabled"  type="TINYINT"/>
+            <column  name="created_date"  type="DATETIME"/>
+            <column  name="last_login_date"  type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="add_user_roles" author="scelac">
+        <insert tableName="user_role">
+            <column name="id" valueNumeric="1"/>
+            <column name="role_name" value="PM"/>
+        </insert>
+        <insert tableName="user_role">
+            <column name="id" valueNumeric="2"/>
+            <column name="role_name" value="SCRUM_MASTER"/>
+        </insert>
+        <insert tableName="user_role">
+            <column name="id" valueNumeric="3"/>
+            <column name="role_name" value="TESTER"/>
+        </insert>
+        <insert tableName="user_role">
+            <column name="id" valueNumeric="4"/>
+            <column name="role_name" value="DEVELOPER"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add_users" author="scelac" >
+        <insert tableName="users">
+            <column name="id" valueNumeric="1"/>
+            <column name="first_name" value="Jon"/>
+            <column name="last_name" value="Davis"/>
+            <column name="user_name" value="jon.davis@gmail.com"/>
+            <column name="role" value="1"/>
+            <column name="enabled" value="1"/>
+            <column  name="created_date"  value="2023-01-25 19:25:40"/>
+            <column  name="last_login_date"  value="2023-01-25 19:25:40"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="id" valueNumeric="2"/>
+            <column name="first_name" value="James"/>
+            <column name="last_name" value="Flores"/>
+            <column name="user_name" value="mail1@gmail.com"/>
+            <column name="role" value="4"/>
+            <column name="enabled" value="1"/>
+            <column  name="created_date"  value="2023-01-25 19:25:40"/>
+            <column  name="last_login_date"  value="2023-01-25 19:25:40"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="id" valueNumeric="3"/>
+            <column name="first_name" value="Robert"/>
+            <column name="last_name" value="Green"/>
+            <column name="user_name" value="mail2@gmail.com"/>
+            <column name="role" value="3"/>
+            <column name="enabled" value="1"/>
+            <column  name="created_date"  value="2023-01-25 19:25:40"/>
+            <column  name="last_login_date"  value="2023-01-25 19:25:40"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="id" valueNumeric="4"/>
+            <column name="first_name" value="Michael"/>
+            <column name="last_name" value="Adams"/>
+            <column name="user_name" value="mail3@gmail.com"/>
+            <column name="role" value="2"/>
+            <column name="enabled" value="1"/>
+            <column  name="created_date"  value="2023-01-25 19:25:40"/>
+            <column  name="last_login_date"  value="2023-01-25 19:25:40"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

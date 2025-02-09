@@ -1,6 +1,7 @@
 package com.celac.jdbc.app.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 public class User implements Serializable {
@@ -9,6 +10,10 @@ public class User implements Serializable {
   private String firstName;
   private String lastName;
   private List<Task> taskList;
+  private UserRole userRole;
+  private Boolean enabled;
+  private Date createdDate;
+  private Date lastLoginDate;
 
   public User() {}
 
@@ -17,6 +22,38 @@ public class User implements Serializable {
     this.userName = userName;
     this.firstName = firstName;
     this.lastName = lastName;
+  }
+
+  public UserRole getUserRole() {
+    return userRole;
+  }
+
+  public void setUserRole(UserRole userRole) {
+    this.userRole = userRole;
+  }
+
+  public Boolean getEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
+
+  public Date getCreatedDate() {
+    return createdDate;
+  }
+
+  public void setCreatedDate(Date createdDate) {
+    this.createdDate = createdDate;
+  }
+
+  public Date getLastLoginDate() {
+    return lastLoginDate;
+  }
+
+  public void setLastLoginDate(Date lastLoginDate) {
+    this.lastLoginDate = lastLoginDate;
   }
 
   public Long getId() {

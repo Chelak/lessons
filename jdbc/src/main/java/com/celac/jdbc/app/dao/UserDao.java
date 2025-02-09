@@ -11,6 +11,8 @@ public interface UserDao extends Operations<User> {
 
   List<User> selectAllPageable( int fromRow, int rows);
 
+  void deleteByUserName(String username);
+
   PageResponse<User> selectAllPaginated(PageRequest pageRequest );
 
   int[] batchInsert(List<User> userList);
